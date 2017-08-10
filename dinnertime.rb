@@ -3,7 +3,7 @@ require 'Nokogiri'
 
 
 # creating classes
-class Recipe
+class Url
   def initialize(url)
     @url = url
   end
@@ -11,22 +11,119 @@ class Recipe
   attr_accessor :url
 
   def self.all
-  ObjectSpace.each_object(self).to_a
+    ObjectSpace.each_object(self).to_a
   end
 end
+#
+url1 = Url.new("http://www.taste.com.au/recipes/chicken-bstilla-pies/uGbryXOY?r=quickeasy/kj1r4Zny")
+url2 = Url.new("http://www.taste.com.au/recipes/beef-olive-spaghetti-bolognese/77f0654c-0c53-4f95-bc41-d864ae90426d?r=recipes/beefrecipes&c=ed77f9a0-ff56-40d0-b903-b24e86c38152/Beef%20recipes")
+url3 = Url.new("http://www.taste.com.au/recipes/pappardelle-pumpkin-bacon-torn-bread/2318e227-1dc9-463f-94ee-e4c0ddf0778f?r=recipes/pastarecipes&c=9a361b5c-6b07-48cb-ba64-399b8627268c/Pasta%20recipes")
 
-r1 = Recipe.new("http://www.taste.com.au/recipes/chicken-bstilla-pies/uGbryXOY?r=quickeasy/kj1r4Zny")
-r2 = Recipe.new("http://www.taste.com.au/recipes/beef-olive-spaghetti-bolognese/77f0654c-0c53-4f95-bc41-d864ae90426d?r=recipes/beefrecipes&c=ed77f9a0-ff56-40d0-b903-b24e86c38152/Beef%20recipes")
-r3 = Recipe.new("http://www.taste.com.au/recipes/pappardelle-pumpkin-bacon-torn-bread/2318e227-1dc9-463f-94ee-e4c0ddf0778f?r=recipes/pastarecipes&c=9a361b5c-6b07-48cb-ba64-399b8627268c/Pasta%20recipes")
 
 
+#
+# recipe_list = []
+#
+# Url.all.each do |i|
+#   recipe_list << i.url
+# end
+#
+# hash = { }
+#
+# hash[Url.all.each do |j| get_recipe_title(recipe_list[j])] = 2
+# # hash["Url.all.each {|j| get_recipe_title(recipe_list[j])}"] = 2
+#
+# puts hash
 
-# This output currently works
-Recipe.all.each do |url|
-  puts "The recipe can be found on #{url.url}"
+# i = 0
+# while i < recipe_list.count
+#   print i + 1
+#   print ". "
+#   get_recipe_title(recipe_list[i])
+#   i += 1
+# end
+
+# puts recipe_list
+
+# scraping title
+def get_recipe_title(url)
+  page = HTTParty.get(url)
+  parse_page = Nokogiri::HTML(page)
+  title = parse_page.css("h1")
+  title_of_recipe = title.text
+  puts title_of_recipe
 end
 
+recipe_titulos = []
+#
+# Url.all.each do |i|
+#   recipe_titulos << get_recipe_title(i.url)
+# end
+#
+# puts recipe_titulos
 
+def get_recipe_ingredient_list(url, a)
+
+  page = HTTParty.get(url)
+  parse_page = Nokogiri::HTML(page)
+  scraped_ingredient = []
+
+  parse_page.css(".ingredient-description").map do |a|
+    ing = a.text
+    scraped_ingredient << ing
+  end
+
+end
+things = get_recipe_ingredient_list('http://www.taste.com.au/recipes/chicken-bstilla-pies/uGbryXOY?r=quickeasy/kj1r4Zny', 0)
+things.uniq
+
+puts things
+
+
+
+# def get_recipe_ingredient_list(url, ingredients, a, need, got)
+#
+#   page = HTTParty.get(url)
+#   parse_page = Nokogiri::HTML(page)
+#   scraped_ingredient = []
+#
+#   parse_page.css(".ingredient-description").map do |a|
+#     ing = a.text
+#     scraped_ingredient.push(ing)
+#   end
+#
+#   for i in scraped_ingredient
+#     j = 0
+#     while j < a
+#       if i.downcase.include?(ingredients[j].downcase) == false
+#         need.push(i)
+#         j += 1
+#       else
+#         got.push(i)
+#         j += 1
+#       end
+#     end
+#   end
+#
+# end
+
+# get_recipe_ingredient_list('http://www.taste.com.au/recipes/chicken-bstilla-pies/uGbryXOY?r=quickeasy/kj1r4Zny', "balls", 2, ["more balls", "choc balls"], ["choc balls"])
+
+# # search for recipes
+# puts "Let me have a look at some recipes you can cook up tonight!"
+# puts ""
+# puts "Would you like?"
+# i = 0
+# while i < recipe_list.count
+#   print i + 1
+#   print ". "
+#   get_recipe_title(recipe_list[i])
+#   i += 1
+# end
+
+
+# making it count
+# puts Recipe.all.count
 
 
 
